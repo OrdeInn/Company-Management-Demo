@@ -1,6 +1,8 @@
 package com.orderinn.companyManagement.Business;
 
+import com.orderinn.companyManagement.Dal.CompanyRepository;
 import com.orderinn.companyManagement.Dal.UserRepository;
+import com.orderinn.companyManagement.Model.Company;
 import com.orderinn.companyManagement.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,11 +17,13 @@ public class ManagerService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CompanyRepository companyRepository;
 
     @Autowired
-    public ManagerService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public ManagerService(UserRepository userRepository, PasswordEncoder passwordEncoder, CompanyRepository companyRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.companyRepository = companyRepository;
     }
 
     public User getManagerByUsername(String username){
@@ -102,5 +106,29 @@ public class ManagerService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
+    }
+
+    public User changeManagerCompany(Long managerId, Long companyId){
+        if(managerId == null || String.valueOf(managerId).length() < 5){
+            throw new IllegalArgumentException("Given manager id is not valid.");
+        }
+        if(companyId == null || String.valueOf(companyId).length() < 5){
+            throw new IllegalArgumentException("Given company id is not valid.");
+        }
+
+        Optional<User> optionalUser = userRepository.findByUserId(managerId);
+        Optional<Company> optionalCompany = companyRepository.findByCompanyId(companyId);
+
+        if(optionalUser.isPresent()){
+            if(optionalCompany.isPresent()){
+                User manager = optionalUser.get();
+                manager.setCompanyId(companyId);
+                return userRepository.save(manager);
+            }else{
+                throw new IllegalArgumentException("There is no company with given id.");
+            }
+        }else{
+            throw new IllegalArgumentException("There is no manager with given id.");
+        }
     }
 }

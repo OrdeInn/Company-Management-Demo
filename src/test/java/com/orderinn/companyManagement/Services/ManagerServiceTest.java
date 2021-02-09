@@ -2,7 +2,9 @@ package com.orderinn.companyManagement.Services;
 
 
 import com.orderinn.companyManagement.Business.ManagerService;
+import com.orderinn.companyManagement.Dal.CompanyRepository;
 import com.orderinn.companyManagement.Dal.UserRepository;
+import com.orderinn.companyManagement.Model.Company;
 import com.orderinn.companyManagement.Model.Role;
 import com.orderinn.companyManagement.Model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,9 @@ public class ManagerServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private CompanyRepository companyRepository;
 
     @InjectMocks
     private ManagerService managerService;
@@ -273,12 +278,106 @@ public class ManagerServiceTest {
 
     @Test
     void throwExceptionWhenSaveManagerIfPasswordNotValid(){
-        User user = new User(12345L, "testUser", "short", "Test", "User", 1, "IT", 111111L);
+        User user = new User(12345L, "testUser", "short", "Test", "User", 2, "IT", 111111L);
 
         assertThrows(IllegalArgumentException.class, ()->{
            managerService.saveManager(user);
         });
-
     }
+
+    @Test
+    void shouldChangeManagersCompanyProperly(){
+        User user = new User(12345L, "testUser", "password", "Test", "User", 2, "IT", 111111L);
+        Optional<User> optionalUser = Optional.of(user);
+        given(userRepository.findByUserId(12345L)).willReturn(optionalUser);
+
+        Company company = new Company(111112L, "Google");
+        Optional<Company> optionalCompany = Optional.of(company);
+        given(companyRepository.findByCompanyId(111112L)).willReturn(optionalCompany);
+
+        User changedUser = new User(12345L, "testUser", "password", "Test", "User", 2, "IT", 111112L);
+        given(userRepository.save(any(User.class))).willReturn(changedUser);
+
+        User changedManager = managerService.changeManagerCompany(12345L, 111112L);
+
+        assertThat(changedManager.getUserId()).isEqualTo(12345L);
+        assertThat(changedManager.getUsername()).isEqualTo("testUser");
+        assertThat(changedManager.getPassword()).isEqualTo("password");
+        assertThat(changedManager.getFirstName()).isEqualTo("Test");
+        assertThat(changedManager.getLastName()).isEqualTo("User");
+        assertThat(changedManager.getDepartment()).isEqualTo("IT");
+        assertThat(changedManager.getRoleId()).isEqualTo(2);
+        assertThat(changedManager.getCompanyId()).isEqualTo(111112L);
+    }
+
+    @Test
+    void throwsExceptionWhenChangeManagerCompanyIfManagerIdNotValid(){
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.changeManagerCompany(null, 111112L);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.changeManagerCompany(123L, 111112L);
+        });
+    }
+
+    @Test
+    void throwsExceptionWhenChangeManagerCompanyIfCompanyIdNotValid(){
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.changeManagerCompany(12345L, null);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.changeManagerCompany(12345L, 112L);
+        });
+    }
+
+    @Test
+    void throwsExceptionWhenChangeManagerCompanyIfThereIsNoManagerByGivenId(){
+        Company company = new Company(111112L, "Google");
+        Optional<Company> optionalCompany = Optional.of(company);
+        given(companyRepository.findByCompanyId(111112L)).willReturn(optionalCompany);
+
+        Optional<User> optionalUser = Optional.empty();
+        given(userRepository.findByUserId(12345L)).willReturn(optionalUser);
+
+        assertThrows(IllegalArgumentException.class, ()->{
+           managerService.changeManagerCompany(12345L, 111112L);
+        });
+    }
+
+    @Test
+    void throwsExceptionWhenChangeManagerCompanyIfThereIsNoCompanyByGivenId(){
+        User user = new User(12345L, "testUser", "password", "Test", "User", 2, "IT", 111111L);
+        Optional<User> optionalUser = Optional.of(user);
+        given(userRepository.findByUserId(12345L)).willReturn(optionalUser);
+
+        Optional<Company> optionalCompany = Optional.empty();
+        given(companyRepository.findByCompanyId(111112L)).willReturn(optionalCompany);
+
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.changeManagerCompany(12345L, 111112L);
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

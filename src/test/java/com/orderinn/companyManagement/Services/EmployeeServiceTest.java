@@ -285,4 +285,50 @@ public class EmployeeServiceTest {
         assertThat(returnedUser.getRoleId()).isEqualTo(3);
         assertThat(returnedUser.getDepartment()).isEqualTo("IT");
     }
+
+    @Test
+    void throwsExceptionWhenChangeEmployeesCompanyIfEmployeeIdNotValid(){
+        assertThrows(IllegalArgumentException.class, ()->{
+            employeeService.changeEmployeesCompany(null, 111112L);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+            employeeService.changeEmployeesCompany(123L, 111112L);
+        });
+    }
+
+    @Test
+    void throwsExceptionWhenChangeEmployeesCompanyIfCompanyIdNotValid(){
+        assertThrows(IllegalArgumentException.class, ()->{
+            employeeService.changeEmployeesCompany(12345L, null);
+        });assertThrows(IllegalArgumentException.class, ()->{
+            employeeService.changeEmployeesCompany(12345L, 111L);
+        });
+    }
+
+    @Test
+    void throwsExceptionWhenChangeEmployeesCompanyIfThereIsNoEmployeeByGivenId(){
+        Optional<User> emptyEmp = Optional.empty();
+        given(userRepository.findByUserId(12345L)).willReturn(emptyEmp);
+        Company company = new Company(111112L, "Google");
+        Optional<Company> optionalCompany = Optional.of(company);
+        given(companyRepository.findByCompanyId(111112L)).willReturn(optionalCompany);
+
+
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.changeEmployeesCompany(12345L, 111112L);
+        });
+    }
+
+    @Test
+    void throwsExceptionWhenChangeEmployeesCompanyIfThereIsNoCompanyByGivenId(){
+        User user = new User(12345L, "testUser", "password", "Test", "User", 3, "IT", 111111L);
+        Optional<User> optionalUser = Optional.of(user);
+        given(userRepository.findByUserId(12345L)).willReturn(optionalUser);
+        Optional<Company> optionalCompany = Optional.empty();
+        given(companyRepository.findByCompanyId(111112L)).willReturn(optionalCompany);
+
+        assertThrows(IllegalArgumentException.class, ()->{
+            employeeService.changeEmployeesCompany(12345L, 111112L);
+        });
+    }
 }

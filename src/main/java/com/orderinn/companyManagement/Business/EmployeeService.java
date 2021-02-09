@@ -123,6 +123,4 @@ public class EmployeeService {
             throw new IllegalArgumentException("There is no employee with given id");
         }
     }
-
-
 }

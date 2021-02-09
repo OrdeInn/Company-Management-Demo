@@ -2,7 +2,7 @@
 DROP TABLE USERS CASCADE ;
 DROP TABLE ROLES CASCADE ;
 DROP TABLE COMPANY CASCADE ;
-
+DROP SEQUENCE user_pk_seq;
 
 CREATE TABLE COMPANY(
     company_id NUMBER(8) PRIMARY KEY,
@@ -38,7 +38,7 @@ INSERT INTO USERS(user_id, username, password, first_name, last_name, role_id, d
 
 
 
-
+CREATE SEQUENCE user_pk_seq MINVALUE 100000 START WITH 100000 INCREMENT BY 10;
 
 
 

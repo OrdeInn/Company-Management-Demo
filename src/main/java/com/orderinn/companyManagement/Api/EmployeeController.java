@@ -53,4 +53,19 @@ public class EmployeeController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/transfer/{employeeId}/{companyId}")
+    @PreAuthorize("hasRole('SYSTEM_MANAGER')")
+    public ResponseEntity<User> transferEmployeeAnotherCompany(@PathVariable("employeeId") Long employeeId,
+                                                               @PathVariable("companyId") Long companyId){
+        User transferredManager;
+        try{
+            transferredManager = employeeService.changeEmployeesCompany(employeeId, companyId);
+            return new ResponseEntity<>(transferredManager, HttpStatus.OK);
+
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

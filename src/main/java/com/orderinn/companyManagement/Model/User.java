@@ -8,7 +8,8 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="user_gen", sequenceName = "user_pk_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_gen")
     @Column(name = "user_id")
     private Long userId;
     @Column(name = "username")
@@ -30,17 +31,6 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "company_id", insertable = false, updatable = false, nullable = false )
     private Company company;
-
-    /*
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(
-            name="users_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name="role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
-
-     */
 
     @ManyToOne
     @JoinColumn(name = "role_id", insertable = false, updatable = false,nullable = false)
