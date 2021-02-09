@@ -24,31 +24,36 @@ public class CompanyService {
     }
 
     public Company getCompanyById(Long Id){
+        if (Id == null || String.valueOf(Id).length() < 5){
+            throw new IllegalArgumentException("Given company id is not valid.");
+        }
+
         Optional<Company> optionalCompany = companyRepository.findByCompanyId(Id);
 
         if(optionalCompany.isPresent()){
-            Company company = optionalCompany.get();
-            return company;
+            return optionalCompany.get();
         }else{
             throw new IllegalArgumentException(String.format("There is no company with id %d", Id));
         }
     }
 
     public List<User> getEmployees(Long Id){
+        if (Id == null || String.valueOf(Id).length() < 5){
+            throw new IllegalArgumentException("Given company id is not valid.");
+        }
+
         Company company = getCompanyById(Id);
         return company.getEmployees();
     }
 
     public Company addNewCompany(Company company){
 
-        if(company.getCompanyId() == null){
+        if(company.getCompanyId() == null || String.valueOf(company.getCompanyId()).length() < 5){
             throw new IllegalArgumentException("A company should have proper id");
-        }else if(company.getCompanyName()==null || company.getCompanyName() == ""){
+        }else if(company.getCompanyName() == null || company.getCompanyName() == ""){
             throw new IllegalArgumentException("A company should have proper name");
         }
 
         return companyRepository.save(company);
-
     }
-
 }

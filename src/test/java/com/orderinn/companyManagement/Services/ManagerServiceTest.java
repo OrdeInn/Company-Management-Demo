@@ -59,6 +59,21 @@ public class ManagerServiceTest {
     }
 
     @Test
+    void throwExceptionWhenGetManagerByUsernameIfNotValid(){
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.getManagerByUsername(null);
+        });
+
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.getManagerByUsername("test");
+        });
+
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.getManagerByUsername("");
+        });
+    }
+
+    @Test
     void throwExceptionWhenFoundUserWithUsernameIsNotManager(){
         User user = new User(12345L, "testUser", "25805026", "Test", "User", 3, "IT", 111111L);
         Optional<User> optionalUser = Optional.of(user);
@@ -99,12 +114,22 @@ public class ManagerServiceTest {
     }
 
     @Test
+    void throwExceptionWhenGetManagerByIdIfNotValid(){
+        assertThrows(IllegalArgumentException.class, ()->{
+           managerService.getManagerById(123L);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.getManagerById(null);
+        });
+    }
+
+    @Test
     void throwExceptionWhenFoundUserIsNull(){
         Optional<User> optionalUser = Optional.empty();
         given(userRepository.findByUserId(any(Long.class))).willReturn(optionalUser);
 
         assertThrows(IllegalArgumentException.class, ()->{
-            User testUser = managerService.getManagerById(12345L);
+            managerService.getManagerById(12345L);
         });
     }
 
@@ -116,7 +141,7 @@ public class ManagerServiceTest {
         given(userRepository.findByUserId(12345L)).willReturn(optionalUser);
 
         assertThrows(IllegalArgumentException.class, ()->{
-            User manager = managerService.getManagerById(12345L);
+            managerService.getManagerById(12345L);
         });
     }
 
@@ -132,7 +157,7 @@ public class ManagerServiceTest {
         managers.add(user3);
 
         given(userRepository.findByFirstName("Test")).willReturn(managers);
-        List<User> returnedManagers = userRepository.findByFirstName("Test");
+        List<User> returnedManagers = managerService.getManagersByFirstName("Test");
 
         for(User manager : returnedManagers){
             assertThat(manager.getFirstName()).isEqualTo("Test");
@@ -140,16 +165,16 @@ public class ManagerServiceTest {
         }
     }
 
-    /*
     @Test
-    void shouldReturnEmptyListIfThereIsNoManagerWithGivenFirstname(){
-        List<User> managers = new ArrayList<>();
-        given(userRepository.findByFirstName("testUSer")).willReturn(managers);
+    void throwExceptionWhenGetManagersByFirstnameIfNull(){
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.getManagersByFirstName(null);
+        });
 
-        assertThat(userRepository.findByFirstName("testUser").size()).isEqualTo(0);
+        assertThrows(IllegalArgumentException.class, ()->{
+            managerService.getManagersByFirstName("");
+        });
     }
-
-     */
 
     @Test
     void shouldReturnListOfAllManagers(){
@@ -162,9 +187,9 @@ public class ManagerServiceTest {
         managers.add(user2);
         managers.add(user3);
 
-        given(userRepository.findAll()).willReturn(managers);
+        given(userRepository.findByRoleId(2)).willReturn(managers);
 
-        List<User> returnedManagers = userRepository.findAll();
+        List<User> returnedManagers = managerService.getAllManagers();
         for(User manager : returnedManagers){
             assertThat(manager.getUserId()).isNotNull();
             assertThat(manager.getUsername()).isNotNull();
@@ -181,13 +206,14 @@ public class ManagerServiceTest {
     void shouldSaveManagerProperly(){
         User user = new User(12345L, "testUser", "25805026", "Test", "User", 2, "IT", 111111L);
 
+        given(passwordEncoder.encode(any(String.class))).willReturn("This is an encoded string.");
+
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        System.out.println(encodedPassword);
 
         given(userRepository.save(any(User.class))).willReturn(user);
 
-        User returnedUser = userRepository.save(user);
+        User returnedUser = managerService.saveManager(user);
 
         assertThat(returnedUser.getUserId()).isEqualTo(12345L);
         assertThat(returnedUser.getUsername()).isEqualTo("testUser");
@@ -200,20 +226,59 @@ public class ManagerServiceTest {
     }
 
     @Test
-    void throwExceptionIfAnyFieldsOfManagerIsNull(){
+    void throwExceptionWhenSaveManagerIfAnyFieldsOfManagerIsNull(){
         User user = new User(12345L, null, "25805026", "Test", "User", 2, "IT", 111111L);
+        User user1 = new User(12345L, "testUser", null, "Test", "User", 1, "IT", 111111L);
+        User user2 = new User(12345L, "testUser", "25805026", null, "User", 1, "IT", 111111L);
+        User user3 = new User(12345L, "testUser", "25805026", "Test", null, 1, "IT", 111111L);
+        User user4 = new User(12345L, "testUser", "25805026", "Test", "User", 1, null, 111111L);
+        User user5 = new User(12345L, "testUser", "25805026", "Test", "User", 1, "IT", null);
 
         assertThrows(IllegalArgumentException.class , ()->{
-            managerService.saveNewManager(user);
+            managerService.saveManager(user);
+        });
+        assertThrows(IllegalArgumentException.class , ()->{
+            managerService.saveManager(user1);
+        });
+        assertThrows(IllegalArgumentException.class , ()->{
+            managerService.saveManager(user2);
+        });
+        assertThrows(IllegalArgumentException.class , ()->{
+            managerService.saveManager(user3);
+        });
+        assertThrows(IllegalArgumentException.class , ()->{
+            managerService.saveManager(user4);
+        });
+        assertThrows(IllegalArgumentException.class , ()->{
+            managerService.saveManager(user5);
         });
     }
 
     @Test
-    void throwExceptionIfUserIsNotManager(){
+    void throwExceptionWhenSaveManagerIfUserIsNotManager(){
         User user = new User(12345L, "testUser", "25805026", "Test", "User", 1, "IT", 111111L);
 
         assertThrows(IllegalArgumentException.class, ()->{
-            managerService.saveNewManager(user);
+            managerService.saveManager(user);
         });
     }
+
+    @Test
+    void throwExceptionWhenSaveManagerIfUsernameNotValid(){
+        User user = new User(12345L, "test", "25805026", "Test", "User", 2, "IT", 111111L);
+        assertThrows(IllegalArgumentException.class, ()->{
+           managerService.saveManager(user);
+        });
+    }
+
+    @Test
+    void throwExceptionWhenSaveManagerIfPasswordNotValid(){
+        User user = new User(12345L, "testUser", "short", "Test", "User", 1, "IT", 111111L);
+
+        assertThrows(IllegalArgumentException.class, ()->{
+           managerService.saveManager(user);
+        });
+
+    }
+
 }

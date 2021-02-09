@@ -32,15 +32,26 @@ public class ManagerController {
     @GetMapping(path = "{id}")
     @PreAuthorize("hasRole('SYSTEM_MANAGER')")
     public ResponseEntity<User> getManagerById(@PathVariable("id") Long Id){
-        User user = managerService.getManagerById(Id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        User user;
+        try {
+            user = managerService.getManagerById(Id);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/new")
     @PreAuthorize("hasRole('SYSTEM_MANAGER')")
     public ResponseEntity<User> addNewManager(@RequestBody User user){
-        User savedUser = managerService.saveNewManager(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.OK);
+        User savedUser;
+        try{
+            savedUser = managerService.saveManager(user);
+            return new ResponseEntity<>(savedUser, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
-
 }

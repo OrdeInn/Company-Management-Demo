@@ -11,5 +11,4 @@ public interface CompanyRepository extends CrudRepository<Company, Long> {
     List<Company> findAll();
     Optional<Company> findByCompanyId(Long Id);
     Company save(Company company);
-
 }

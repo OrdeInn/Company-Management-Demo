@@ -2,8 +2,6 @@ package com.orderinn.companyManagement.Model;
 
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -49,13 +47,13 @@ public class User {
     private Role role;
 
 
-    public User(Long id, String username, String password, String first_name, String last_name, Integer role, String department, Long companyId) {
+    public User(Long id, String username, String password, String first_name, String last_name, Integer roleId, String department, Long companyId) {
         userId = id;
         this.username = username;
         this.password = password;
         this.firstName = first_name;
         this.lastName = last_name;
-        this.roleId = role;
+        this.roleId = roleId;
         this.department = department;
         this.companyId = companyId;
     }

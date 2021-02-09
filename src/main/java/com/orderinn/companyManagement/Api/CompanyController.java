@@ -32,25 +32,39 @@ public class CompanyController {
     @GetMapping(path = "{id}")
     @PreAuthorize("hasRole('SYSTEM_MANAGER')")
     public ResponseEntity<Company> getCompany(@PathVariable("id") Long Id){
-        Company company = companyService.getCompanyById(Id);
-        return new ResponseEntity<>(company, HttpStatus.OK);
+        Company company;
+        try{
+            company = companyService.getCompanyById(Id);
+            return new ResponseEntity<>(company, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @GetMapping("employees")
+    @GetMapping("/employees/{id}")
     @PreAuthorize("hasRole('SYSTEM_MANAGER')")
-    public ResponseEntity<List<User>> getEmployees(@RequestParam("id") Long Id){
-        List<User> employees = companyService.getEmployees(Id);
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+    public ResponseEntity<List<User>> getEmployees(@PathVariable("id") Long Id){
+        List<User> employees;
+        try{
+            employees = companyService.getEmployees(Id);
+            return new ResponseEntity<>(employees, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/new")
     @PreAuthorize("hasRole('SYSTEM_MANAGER')")
     public ResponseEntity<Company> addNewCompany(@RequestBody Company company){
-        Company returnedCompany = companyService.addNewCompany(company);
-        return new ResponseEntity<>(returnedCompany, HttpStatus.OK);
+        Company returnedCompany;
+        try{
+            returnedCompany = companyService.addNewCompany(company);
+            return new ResponseEntity<>(returnedCompany, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
-
-
-
-
 }

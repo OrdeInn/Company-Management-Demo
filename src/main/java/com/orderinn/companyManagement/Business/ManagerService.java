@@ -23,6 +23,9 @@ public class ManagerService {
     }
 
     public User getManagerByUsername(String username){
+        if(username == null || username.length() <= 5 ){
+            throw new IllegalArgumentException("invalid username");
+        }
 
         Optional<User> optionalUser = userRepository.findByUsername(username);
         User user;
@@ -40,6 +43,11 @@ public class ManagerService {
     }
 
     public User getManagerById(Long Id){
+
+        if(Id == null || String.valueOf(Id).length() < 5){
+            throw new IllegalArgumentException("Given id is not valid");
+        }
+
         Optional<User> optionalUser = userRepository.findByUserId(Id);
         User user;
         if(optionalUser.isPresent()){
@@ -54,7 +62,11 @@ public class ManagerService {
         return user;
     }
 
-    public List<User> getManagerByFirstName(String firstName){
+    public List<User> getManagersByFirstName(String firstName){
+
+        if(firstName == null || firstName.equals("")){
+            throw new IllegalArgumentException(String.format("%s is not a valid first name", firstName));
+        }
         return userRepository.findByFirstName(firstName).stream().filter(user -> user.getRoleId() == 2).collect(Collectors.toList());
     }
 
@@ -62,19 +74,29 @@ public class ManagerService {
         return userRepository.findByRoleId(2);
     }
 
-    public User saveNewManager(User user){
+    public User saveManager(User user){
 
-        if (user.getUsername() == null ||
+        if (    user.getUsername() == null ||
                 user.getPassword() == null ||
                 user.getFirstName() == null ||
                 user.getLastName() == null ||
-                user.getCompanyId() == null) {
+                user.getCompanyId() == null ||
+                user.getRoleId() == null ||
+                user.getDepartment() == null) {
 
             throw new IllegalArgumentException("Fields of manager cannot be null");
         }
 
         if(user.getRoleId() != 2){
             throw new IllegalArgumentException("Illegal attempt to save new manager");
+        }
+
+        if(user.getUsername().length() <= 5){
+            throw new IllegalArgumentException("username must be at least 6 character long");
+        }
+
+        if(user.getPassword().length() <= 7){
+            throw new IllegalArgumentException("password must be  at least 8 character long");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

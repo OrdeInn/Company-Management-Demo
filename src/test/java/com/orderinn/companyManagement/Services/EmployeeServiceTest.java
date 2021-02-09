@@ -1,7 +1,9 @@
 package com.orderinn.companyManagement.Services;
 
 import com.orderinn.companyManagement.Business.EmployeeService;
+import com.orderinn.companyManagement.Dal.CompanyRepository;
 import com.orderinn.companyManagement.Dal.UserRepository;
+import com.orderinn.companyManagement.Model.Company;
 import com.orderinn.companyManagement.Model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,9 @@ public class EmployeeServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private CompanyRepository companyRepository;
 
     @InjectMocks
     private EmployeeService employeeService;
@@ -88,6 +93,16 @@ public class EmployeeServiceTest {
     }
 
     @Test
+    void throwExceptionWhenGetEmployeeByIdIfNotValid(){
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.getEmployeeById(123L);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+            employeeService.getEmployeeById(null);
+        });
+    }
+
+    @Test
     void throwsExceptionIfCannotFoundEmployeeWithGivenId(){
         Optional<User> optionalUser =  Optional.empty();
         given(userRepository.findByUserId(any(Long.class))).willReturn(optionalUser);
@@ -120,7 +135,7 @@ public class EmployeeServiceTest {
         employees.add(user3);
 
         given(userRepository.findByFirstName("Test")).willReturn(employees);
-        List<User> returnedEmployees = userRepository.findByFirstName("Test");
+        List<User> returnedEmployees = employeeService.getEmployeesByFirstName("Test");
 
         for(User employee : returnedEmployees){
             assertThat(employee.getFirstName()).isEqualTo("Test");
@@ -128,26 +143,146 @@ public class EmployeeServiceTest {
         }
     }
 
+    @Test
+    void throwExceptionWhenGettingEmployeesWithFirstNameIfNullOrEmpty(){
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.getEmployeesByFirstName(null);
+        });
 
+        assertThrows(IllegalArgumentException.class, ()->{
+            employeeService.getEmployeesByFirstName("");
+        });
+    }
 
+    @Test
+    void shouldFindAllEmployeesProperly(){
+        User user1 = new User(12345L, "testUser", "25805026", "Test", "User", 3, "IT", 111111L);
+        User user2 = new User(12346L, "testUser", "56236351", "Test", "Lorem", 3, "IT", 111111L);
+        User user3 = new User(12347L, "testUser", "32165463", "Test", "Ipsum", 3, "IT", 111111L);
 
+        List<User> employees = new ArrayList<>();
+        employees.add(user1);
+        employees.add(user2);
+        employees.add(user3);
 
+        given(userRepository.findByRoleId(3)).willReturn(employees);
 
+        List<User> returnedEmployees = employeeService.getAllEmployees();
 
+        for(User employee : returnedEmployees){
+            assertThat(employee.getRoleId()).isNotNull();
+            assertThat(employee.getUsername()).isNotNull();
+            assertThat(employee.getPassword()).isNotNull();
+            assertThat(employee.getFirstName()).isNotNull();
+            assertThat(employee.getLastName()).isNotNull();
+            assertThat(employee.getRoleId()).isEqualTo(3);
+            assertThat(employee.getDepartment()).isNotNull();
+            assertThat(employee.getCompanyId()).isNotNull();
+        }
+    }
 
+    @Test
+    void shouldSaveEmployeeProperly(){
+        User user = new User(12345L, "testUser", "25805026", "Test", "User", 3, "IT", 111111L);
 
+        given(passwordEncoder.encode(any(String.class))).willReturn("This is an encoded string.");
 
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
 
+        given(userRepository.save(any(User.class))).willReturn(user);
 
+        User returnedEmployee = employeeService.saveEmployee(user);
 
+        assertThat(returnedEmployee.getUsername()).isEqualTo("testUser");
+        assertThat(returnedEmployee.getPassword()).isEqualTo(encodedPassword);
+        assertThat(returnedEmployee.getFirstName()).isEqualTo("Test");
+        assertThat(returnedEmployee.getLastName()).isEqualTo("User");
+        assertThat(returnedEmployee.getRoleId()).isEqualTo(3);
+        assertThat(returnedEmployee.getDepartment()).isEqualTo("IT");
+        assertThat(returnedEmployee.getCompanyId()).isEqualTo(111111);
+    }
 
+    @Test
+    void throwExceptionIfAnyFieldsOfEmployeeIsNull(){
+        User user1 = new User(12345L, null, "25805026", "Test", "User", 3, "IT", 111111L);
+        User user2 = new User(12345L, "testUser", null, "Test", "User", 3, "IT", 111111L);
+        User user3 = new User(12345L, "testUser", "25805026", null, "User", 3, "IT", 111111L);
+        User user4 = new User(12345L, "testUser", "25805026", "Test", null, 3, "IT", 111111L);
+        User user5 = new User(12345L, "testUser", "25805026", "Test", "User", null, "IT", 111111L);
+        User user6 = new User(12345L, "testUser", "25805026", "Test", "User", 3, null, 111111L);
+        User user7 = new User(12345L, "testUser", "25805026", "Test", "User", 3, "IT", null);
 
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user1);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user2);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user3);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user4);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user5);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user6);
+        });
+        assertThrows(IllegalArgumentException.class, ()->{
+            employeeService.saveEmployee(user7);
+        });
+    }
 
+    @Test
+    void throwExceptionIfUserIsNotAnEmployee(){
+        User user = new User(12345L, "testUser", "25805026", "Test", "User", 2, "IT", 111111L);
 
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user);
+        });
+    }
 
+    @Test
+    void throwExceptionWhenSaveNewEmployeeIfUsernameIsNotValid(){
+        User user = new User(12345L, "test", "25805026", "Test", "User", 3, "IT", 111111L);
 
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user);
+        });
+    }
 
+    @Test
+    void throwExceptionWhenSaveNewEmployeeIfPasswordIsNotValid(){
+        User user = new User(12345L, "testUser", "short", "Test", "User", 3, "IT", 111111L);
 
+        assertThrows(IllegalArgumentException.class, ()->{
+           employeeService.saveEmployee(user);
+        });
+    }
 
+    @Test
+    void shouldChangeEmployeesCompanyIdAndSave(){
+        User user = new User(12345L, "testUser", "password", "Test", "User", 3, "IT", 111111L);
+        User changedUser = new User(12345L, "testUser", "password", "Test", "User", 3, "IT", 111112L);
+        Company company = new Company(111112L, "Google");
+        Optional<User> optionalUser = Optional.of(user);
+        Optional<Company> optionalCompany = Optional.of(company);
+        given(companyRepository.findByCompanyId(111112L)).willReturn(optionalCompany);
+        given(userRepository.findByUserId(12345L)).willReturn(optionalUser);
+        given(userRepository.save(any(User.class))).willReturn(changedUser);
 
+        User returnedUser =  employeeService.changeEmployeesCompany(12345L, 111112L);
+
+        assertThat(returnedUser.getCompanyId()).isEqualTo(111112L);
+        assertThat(returnedUser.getUserId()).isEqualTo(12345L);
+        assertThat(returnedUser.getUsername()).isEqualTo("testUser");
+        assertThat(returnedUser.getPassword()).isEqualTo("password");
+        assertThat(returnedUser.getFirstName()).isEqualTo("Test");
+        assertThat(returnedUser.getLastName()).isEqualTo("User");
+        assertThat(returnedUser.getRoleId()).isEqualTo(3);
+        assertThat(returnedUser.getDepartment()).isEqualTo("IT");
+    }
 }

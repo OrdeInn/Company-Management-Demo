@@ -31,22 +31,26 @@ public class EmployeeController {
     @GetMapping(path = "{id}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<User> getEmployeeById(@PathVariable("id") Long Id){
-        User user =  employeeService.getEmployeeById(Id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        User user;
+        try{
+            user = employeeService.getEmployeeById(Id);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/new")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<User> addNewManager(@RequestBody User user){
-        User returnedUser = employeeService.saveNewEmployee(user);
-        return new ResponseEntity<>(returnedUser, HttpStatus.OK);
+        User returnedUser;
+        try{
+            returnedUser = employeeService.saveEmployee(user);
+            return new ResponseEntity<>(returnedUser, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
-
-
-
-
-
-
-
-
 }
