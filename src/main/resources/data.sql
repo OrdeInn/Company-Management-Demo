@@ -1,4 +1,5 @@
 
+/*
 DROP TABLE USERS CASCADE ;
 DROP TABLE ROLES CASCADE ;
 DROP TABLE COMPANY CASCADE ;
@@ -41,5 +42,7 @@ INSERT INTO USERS(user_id, username, password,enabled, first_name, last_name, ro
 
 CREATE SEQUENCE user_pk_seq MINVALUE 100000 START WITH 100000 INCREMENT BY 10;
 
+
+ */
 
 
