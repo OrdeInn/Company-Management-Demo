@@ -2,6 +2,7 @@ package com.orderinn.companyManagement.Config;
 
 
 import com.orderinn.companyManagement.Auth.ApplicationUserDetailsService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,16 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
     private final ApplicationUserDetailsService userDetailsService;
-
-    @Autowired
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, ApplicationUserDetailsService userDetailsService) {
-        this.passwordEncoder = passwordEncoder;
-        this.userDetailsService = userDetailsService;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

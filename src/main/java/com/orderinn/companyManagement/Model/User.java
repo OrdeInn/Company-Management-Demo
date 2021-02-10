@@ -1,10 +1,15 @@
 package com.orderinn.companyManagement.Model;
 
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="users")
+@NoArgsConstructor
+@Data
 public class User {
 
     @Id
@@ -46,78 +51,6 @@ public class User {
         this.roleId = roleId;
         this.department = department;
         this.companyId = companyId;
-    }
-
-    public User() {
-    }
-
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public Integer getRoleId() {
-        return roleId;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public Long getCompanyId() {
-        return companyId;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 }
 

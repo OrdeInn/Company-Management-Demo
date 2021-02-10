@@ -1,10 +1,15 @@
 package com.orderinn.companyManagement.Model;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="roles")
+@NoArgsConstructor
+@Getter
 public class Role {
 
     @Id
@@ -18,15 +23,5 @@ public class Role {
     public Role(Integer id, String name) {
         roleId = id;
         this.name = name;
-    }
-
-    public Role(){}
-
-    public Integer getRoleId() {
-        return roleId;
-    }
-
-    public String getName() {
-        return name;
     }
 }

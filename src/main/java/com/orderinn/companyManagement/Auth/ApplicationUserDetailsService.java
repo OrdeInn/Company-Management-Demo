@@ -2,6 +2,7 @@ package com.orderinn.companyManagement.Auth;
 
 import com.orderinn.companyManagement.Dal.UserRepository;
 import com.orderinn.companyManagement.Model.User;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,14 +12,10 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicationUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    public ApplicationUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
