@@ -2,6 +2,7 @@ package com.orderinn.companyManagement.Api;
 
 import com.orderinn.companyManagement.Business.EmployeeService;
 import com.orderinn.companyManagement.Model.User;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,28 +13,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/employee")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    @Autowired
-    public EmployeeController(EmployeeService employeeService ) {
-        this.employeeService = employeeService;
-    }
-
-    @GetMapping("/all")
-    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/find/all")
     public ResponseEntity<List<User>> getAllEmployees(){
         List<User> users =  employeeService.getAllEmployees();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping(path = "{id}")
-    @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<User> getEmployeeById(@PathVariable("id") Long Id){
-        User user;
+    @GetMapping(path = "find/username/{username}")
+    public ResponseEntity<User> getEmployeeByUsername(@PathVariable("username") String username){
         try{
-            user = employeeService.getEmployeeById(Id);
+            User user = employeeService.getEmployeeByUsername(username);
             return new ResponseEntity<>(user, HttpStatus.OK);
         }catch (IllegalArgumentException e){
             e.printStackTrace();
@@ -41,8 +35,29 @@ public class EmployeeController {
         }
     }
 
+    @GetMapping(path = "/find/id/{id}")
+    public ResponseEntity<User> getEmployeeById(@PathVariable("id") Long Id){
+        try{
+            User user = employeeService.getEmployeeById(Id);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(path = "/find/firstname/{firstName}")
+    public ResponseEntity<List<User>> getEmployeesByFirstname(@PathVariable("firstName") String firstName){
+        try{
+            List<User> employees = employeeService.getEmployeesByFirstName(firstName);
+            return new ResponseEntity<>(employees, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/new")
-    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<User> addNewManager(@RequestBody User user){
         User returnedUser;
         try{

@@ -43,7 +43,7 @@ public class CompanyService {
         return company.getEmployees();
     }
 
-    public Company addNewCompany(Company company){
+    public Company saveCompany(Company company){
 
         if(company.getCompanyId() == null || String.valueOf(company.getCompanyId()).length() < 5){
             throw new IllegalArgumentException("A company should have proper id");

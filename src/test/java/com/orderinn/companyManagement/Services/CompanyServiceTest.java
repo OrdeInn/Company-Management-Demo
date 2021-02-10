@@ -111,7 +111,7 @@ public class CompanyServiceTest {
         Company company = new Company(12345L, "Delta");
         given(companyRepository.save(company)).willReturn(company);
 
-        Company returnedCompany = companyService.addNewCompany(company);
+        Company returnedCompany = companyService.saveCompany(company);
         assertThat(returnedCompany.getCompanyName()).isEqualTo("Delta");
         assertThat(returnedCompany.getCompanyId()).isEqualTo(12345L);
     }
@@ -122,10 +122,10 @@ public class CompanyServiceTest {
         Company company1 = new Company(null, "Delta");
 
         assertThrows(IllegalArgumentException.class, ()->{
-            companyService.addNewCompany(company);
+            companyService.saveCompany(company);
         });
         assertThrows(IllegalArgumentException.class, ()->{
-            companyService.addNewCompany(company1);
+            companyService.saveCompany(company1);
         });
     }
 
@@ -135,10 +135,10 @@ public class CompanyServiceTest {
         Company company1 = new Company(12345L, "");
 
         assertThrows(IllegalArgumentException.class, ()->{
-           companyService.addNewCompany(company);
+           companyService.saveCompany(company);
         });
         assertThrows(IllegalArgumentException.class, ()->{
-            companyService.addNewCompany(company1);
+            companyService.saveCompany(company1);
         });
     }
 }

@@ -24,7 +24,7 @@ public class SystemManagerController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('SYSTEM_MANAGER')")
+    @PreAuthorize("hasAuthority('SYSTEM_MANAGER')")
     public ResponseEntity<List<User>> getAllSystemManagers(){
         List<User> users =  userRepository.findByRoleId(1);
 
