@@ -17,6 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
+import static com.orderinn.companyManagement.CustomAsserts.UserAssert.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CompanyServiceTest {
@@ -81,14 +82,8 @@ public class CompanyServiceTest {
 
         List<User> employeesOfDelta = companyService.getEmployees(111111L);
         for(User employee : employeesOfDelta){
-            assertThat(employee.getUsername()).isNotNull();
-            assertThat(employee.getPassword()).isNotNull();
-            assertThat(employee.getRoleId()).isNotNull();
-            assertThat(employee.getFirstName()).isNotNull();
-            assertThat(employee.getLastName()).isNotNull();
+            customAssert(employee).hasNoNullValue();
             assertThat(employee.getCompanyId()).isEqualTo(111111L);
-            assertThat(employee.getDepartment()).isNotNull();
-            assertThat(employee.getUserId()).isNotNull();
         }
     }
 

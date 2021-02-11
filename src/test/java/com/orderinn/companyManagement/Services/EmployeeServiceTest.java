@@ -19,6 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
+import static com.orderinn.companyManagement.CustomAsserts.UserAssert.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeeServiceTest {
@@ -138,6 +139,7 @@ public class EmployeeServiceTest {
         List<User> returnedEmployees = employeeService.getEmployeesByFirstName("Test");
 
         for(User employee : returnedEmployees){
+            customAssert(employee).hasNoNullValue();
             assertThat(employee.getFirstName()).isEqualTo("Test");
             assertThat(employee.getRoleId()).isEqualTo(3);
         }
@@ -170,14 +172,7 @@ public class EmployeeServiceTest {
         List<User> returnedEmployees = employeeService.getAllEmployees();
 
         for(User employee : returnedEmployees){
-            assertThat(employee.getRoleId()).isNotNull();
-            assertThat(employee.getUsername()).isNotNull();
-            assertThat(employee.getPassword()).isNotNull();
-            assertThat(employee.getFirstName()).isNotNull();
-            assertThat(employee.getLastName()).isNotNull();
-            assertThat(employee.getRoleId()).isEqualTo(3);
-            assertThat(employee.getDepartment()).isNotNull();
-            assertThat(employee.getCompanyId()).isNotNull();
+            customAssert(employee).hasNoNullValue();
         }
     }
 
@@ -194,13 +189,8 @@ public class EmployeeServiceTest {
 
         User returnedEmployee = employeeService.saveEmployee(user);
 
-        assertThat(returnedEmployee.getUsername()).isEqualTo("testUser");
-        assertThat(returnedEmployee.getPassword()).isEqualTo(encodedPassword);
-        assertThat(returnedEmployee.getFirstName()).isEqualTo("Test");
-        assertThat(returnedEmployee.getLastName()).isEqualTo("User");
-        assertThat(returnedEmployee.getRoleId()).isEqualTo(3);
-        assertThat(returnedEmployee.getDepartment()).isEqualTo("IT");
-        assertThat(returnedEmployee.getCompanyId()).isEqualTo(111111);
+        customAssert(returnedEmployee).hasNoNullValue();
+        customAssert(returnedEmployee).compareEachValue(user);
     }
 
     @Test
@@ -276,14 +266,8 @@ public class EmployeeServiceTest {
 
         User returnedUser =  employeeService.changeEmployeesCompany(12345L, 111112L);
 
-        assertThat(returnedUser.getCompanyId()).isEqualTo(111112L);
-        assertThat(returnedUser.getUserId()).isEqualTo(12345L);
-        assertThat(returnedUser.getUsername()).isEqualTo("testUser");
-        assertThat(returnedUser.getPassword()).isEqualTo("password");
-        assertThat(returnedUser.getFirstName()).isEqualTo("Test");
-        assertThat(returnedUser.getLastName()).isEqualTo("User");
-        assertThat(returnedUser.getRoleId()).isEqualTo(3);
-        assertThat(returnedUser.getDepartment()).isEqualTo("IT");
+        customAssert(returnedUser).hasNoNullValue();
+        customAssert(returnedUser).compareEachValue(changedUser);
     }
 
     @Test

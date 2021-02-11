@@ -25,8 +25,8 @@ public class CompanyController {
         return new ResponseEntity<>(companies, HttpStatus.OK);
     }
 
-    @GetMapping(path = "{id}")
-    public ResponseEntity<Company> getCompany(@PathVariable("id") Long Id){
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<Company> getCompanyById(@PathVariable("id") Long Id){
         Company company;
         try{
             company = companyService.getCompanyById(Id);

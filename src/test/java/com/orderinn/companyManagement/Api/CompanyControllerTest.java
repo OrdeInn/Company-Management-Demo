@@ -1,79 +1,128 @@
 package com.orderinn.companyManagement.Api;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orderinn.companyManagement.Business.CompanyService;
 import com.orderinn.companyManagement.Model.Company;
+import com.orderinn.companyManagement.Model.User;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import org.mockito.Mockito;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
 import java.util.List;
 
-@ExtendWith(MockitoExtension.class)
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(controllers = CompanyController.class)
 public class CompanyControllerTest {
 
 
-    @InjectMocks
-    private CompanyController companyController;
+    private MockMvc mockMvc;
 
-    @Mock
+    private ObjectMapper objectMapper;
+
     private CompanyService companyService;
 
 
+    @Before
+    public void setup(){
+        companyService = Mockito.mock(CompanyService.class);
+        final CompanyController companyController = new CompanyController(companyService);
+        mockMvc = MockMvcBuilders.standaloneSetup(companyController).build();
+        objectMapper = new ObjectMapper();
+    }
 
     @Test
-    public void shouldGetAllEmployees(){
+    public void verifyGetAllCompaniesRequestMatching() throws Exception{
+        mockMvc.perform(get("/api/company/all")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldReturnAllCompaniesProperly() throws Exception{
+
         Company company1 = new Company(111111L, "Delta");
         Company company2 = new Company(111112L, "Google");
         Company company3 = new Company(111113L, "Apple");
 
-        List<Company> companyList = new ArrayList<>();
-        companyList.add(company1);
-        companyList.add(company2);
-        companyList.add(company3);
+        List<Company> companies = Arrays.asList(company1, company2, company3);
 
-        given(companyService.getAllCompanies()).willReturn(companyList);
+        Mockito.when(companyService.getAllCompanies()).thenReturn(companies);
+        MvcResult result =  mockMvc.perform(get("/api/company/all")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
 
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        String actualResponse  = result.getResponse().getContentAsString();
 
-        ResponseEntity<List<Company>> responseEntity =  companyController.getAllCompanies();
-
-        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(200);
-
-        List<Company> returnedCompanies = responseEntity.getBody();
-
-        assertThat(returnedCompanies).isNotNull();
-        assertThat(returnedCompanies.size()).isEqualTo(3);
-        for(Company company : returnedCompanies){
-            assertThat(company.getCompanyId()).isNotNull();
-            assertThat(company.getCompanyName()).isNotNull();
-        }
-
+        assertThat(actualResponse).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(companies));
     }
 
+    @Test
+    public void shouldGetCompanyByGivenId() throws Exception{
+        Company company = new Company(111111L, "Delta");
+        given(companyService.getCompanyById(111111L)).willReturn(company);
 
+        mockMvc.perform(get("/api/company/{id}", 111111L).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
+        MvcResult result = mockMvc.perform(get("/api/company/{id}", 111111L).contentType(MediaType.APPLICATION_JSON))
+                                    .andReturn();
 
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(company));
+    }
 
+    @Test
+    public void sendBadRequestStatusWhenGetCompanyByIdIfIdNotValid() throws Exception{
+        Company company = new Company(123L, "Delta");
+        given(companyService.getCompanyById(company.getCompanyId())).willThrow(IllegalArgumentException.class);
 
+        mockMvc.perform(get("/api/company/{id}", company.getCompanyId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
+    @Test
+    public void shouldGetEmployeesOfCompany() throws Exception{
+        Company company = new Company(111111L, "Delta");
+        User  employee1 = new User(12345L, "testUser", "password", "Test", "User", 3, "IT", 111111L);
+        User  employee2 = new User(12346L, "loremIpsum", "password", "Lorem", "Ipsum", 2, "IT", 111111L);
 
+        company.setEmployees(Arrays.asList(employee1, employee2));
+        given(companyService.getEmployees(company.getCompanyId())).willReturn(company.getEmployees());
 
+        MvcResult result =  mockMvc.perform(get("/api/company/employees/{id}", company.getCompanyId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
 
+        String returnedJson = result.getResponse().getContentAsString();
+        assertThat(returnedJson).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(company.getEmployees()));
+    }
 
+    @Test
+    public void sendBadRequestStatusWhenGetEmployeesIfIdNotValid()throws Exception{
+        Company company = new Company(123L, "Delta");
+        given(companyService.getEmployees(company.getCompanyId())).willThrow(IllegalArgumentException.class);
+
+        MvcResult result =  mockMvc.perform(get("/api/company/employees/{id}", company.getCompanyId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isNullOrEmpty();
+    }
 
 
 

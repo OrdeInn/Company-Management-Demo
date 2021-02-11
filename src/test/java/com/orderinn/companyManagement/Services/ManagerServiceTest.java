@@ -22,7 +22,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-
+import static com.orderinn.companyManagement.CustomAsserts.UserAssert.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ManagerServiceTest {
@@ -53,14 +53,9 @@ public class ManagerServiceTest {
         given(userRepository.findByUsername("testUser")).willReturn(optionalUser);
 
         User testUser = managerService.getManagerByUsername("testUser");
-        assertThat(testUser).isEqualTo(user);
-        assertThat(testUser.getRoleId()).isEqualTo(2);
-        assertThat(testUser.getUserId()).isEqualTo(12345L);
-        assertThat(testUser.getFirstName()).isEqualTo("Test");
-        assertThat(testUser.getLastName()).isEqualTo("User");
-        assertThat(testUser.getPassword()).isEqualTo("25805026");
-        assertThat(testUser.getDepartment()).isEqualTo("IT");
-        assertThat(testUser.getCompanyId()).isEqualTo(111111L);
+
+        customAssert(testUser).hasNoNullValue();
+        customAssert(testUser).compareEachValue(user);
     }
 
     @Test
@@ -107,15 +102,10 @@ public class ManagerServiceTest {
         Optional<User> optionalUser = Optional.of(user);
         given(userRepository.findByUserId(12345L)).willReturn(optionalUser);
 
-        assertThat(managerService.getManagerById(12345L).getUserId()).isEqualTo(12345L);
-        assertThat(managerService.getManagerById(12345L).getUsername()).isEqualTo("testUser");
-        assertThat(managerService.getManagerById(12345L).getPassword()).isEqualTo("25805026");
-        assertThat(managerService.getManagerById(12345L).getFirstName()).isEqualTo("Test");
-        assertThat(managerService.getManagerById(12345L).getLastName()).isEqualTo("User");
-        assertThat(managerService.getManagerById(12345L).getRoleId()).isEqualTo(2);
-        assertThat(managerService.getManagerById(12345L).getRole().getName()).isEqualTo("MANAGER");
-        assertThat(managerService.getManagerById(12345L).getDepartment()).isEqualTo("IT");
-        assertThat(managerService.getManagerById(12345L).getCompanyId()).isEqualTo(111111);
+        User returnedManager = managerService.getManagerById(12345L);
+
+        customAssert(returnedManager).hasNoNullValue();
+        customAssert(returnedManager).compareEachValue(user);
     }
 
     @Test
@@ -196,14 +186,7 @@ public class ManagerServiceTest {
 
         List<User> returnedManagers = managerService.getAllManagers();
         for(User manager : returnedManagers){
-            assertThat(manager.getUserId()).isNotNull();
-            assertThat(manager.getUsername()).isNotNull();
-            assertThat(manager.getPassword()).isNotNull();
-            assertThat(manager.getFirstName()).isNotNull();
-            assertThat(manager.getLastName()).isNotNull();
-            assertThat(manager.getRoleId()).isNotNull();
-            assertThat(manager.getDepartment()).isNotNull();
-            assertThat(manager.getCompanyId()).isNotNull();
+            customAssert(manager).hasNoNullValue();
         }
     }
 
@@ -220,14 +203,8 @@ public class ManagerServiceTest {
 
         User returnedUser = managerService.saveManager(user);
 
-        assertThat(returnedUser.getUserId()).isEqualTo(12345L);
-        assertThat(returnedUser.getUsername()).isEqualTo("testUser");
-        assertThat(returnedUser.getPassword()).isEqualTo(encodedPassword);
-        assertThat(returnedUser.getFirstName()).isEqualTo("Test");
-        assertThat(returnedUser.getLastName()).isEqualTo("User");
-        assertThat(returnedUser.getRoleId()).isEqualTo(2);
-        assertThat(returnedUser.getDepartment()).isEqualTo("IT");
-        assertThat(returnedUser.getCompanyId()).isEqualTo(111111);
+        customAssert(returnedUser).hasNoNullValue();
+        customAssert(returnedUser).compareEachValue(user);
     }
 
     @Test
@@ -300,14 +277,8 @@ public class ManagerServiceTest {
 
         User changedManager = managerService.changeManagerCompany(12345L, 111112L);
 
-        assertThat(changedManager.getUserId()).isEqualTo(12345L);
-        assertThat(changedManager.getUsername()).isEqualTo("testUser");
-        assertThat(changedManager.getPassword()).isEqualTo("password");
-        assertThat(changedManager.getFirstName()).isEqualTo("Test");
-        assertThat(changedManager.getLastName()).isEqualTo("User");
-        assertThat(changedManager.getDepartment()).isEqualTo("IT");
-        assertThat(changedManager.getRoleId()).isEqualTo(2);
-        assertThat(changedManager.getCompanyId()).isEqualTo(111112L);
+        customAssert(changedManager).hasNoNullValue();
+        customAssert(changedManager).compareEachValue(changedUser);
     }
 
     @Test
