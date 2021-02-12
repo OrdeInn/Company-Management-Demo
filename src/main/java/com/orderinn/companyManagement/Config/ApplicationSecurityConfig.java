@@ -26,7 +26,6 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         http    .authorizeRequests()
                 .antMatchers("/api/manager/**").hasRole("SYSTEM_MANAGER")
                 .antMatchers("/api/employee/**").hasAnyRole("SYSTEM_MANAGER", "MANAGER")
-                .antMatchers("/api/systemManager/**").hasRole("SYSTEM_MANAGER")
                 .antMatchers("/api/company/**").hasRole("SYSTEM_MANAGER")
                 .anyRequest()
                 .authenticated()
