@@ -124,21 +124,31 @@ public class CompanyControllerTest {
         assertThat(result.getResponse().getContentAsString()).isNullOrEmpty();
     }
 
+    @Test
+    public void  shouldAddNewCompanyToSystemProperly()throws Exception{
+        Company company = new Company(111111L, "Delta");
 
+        given(companyService.saveCompany(company)).willReturn(company);
 
+        MvcResult result = mockMvc.perform(post("/api/company/new")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(company)))
+                                    .andExpect(status().isOk())
+                                    .andReturn();
 
+        assertThat(result.getResponse().getContentAsString())
+                                                        .isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(company));
+    }
 
+    @Test
+    public void sendBadRequestWhenAddNewCompanyToSystemIfCompanyNameNull()  throws Exception  {
+        Company company = new Company(111111L, null);
 
+        given(companyService.saveCompany(company)).willThrow(IllegalArgumentException.class);
 
-
-
-
-
-
-
-
-
-
-
-
+        mockMvc.perform(post("/api/company/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company)))
+                .andExpect(status().isBadRequest());
+    }
 }

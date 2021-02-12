@@ -24,7 +24,7 @@ public class EmployeeController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping(path = "find/username/{username}")
+    @GetMapping(path = "/find/username/{username}")
     public ResponseEntity<User> getEmployeeByUsername(@PathVariable("username") String username){
         try{
             User user = employeeService.getEmployeeByUsername(username);
