@@ -1,5 +1,5 @@
 
-
+/*
 DROP TABLE USERS CASCADE ;
 DROP TABLE ROLES CASCADE ;
 DROP TABLE COMPANY CASCADE ;
@@ -33,7 +33,7 @@ INSERT INTO ROLES VALUES (1, 'ROLE_SYSTEM_MANAGER');
 INSERT INTO ROLES VALUES (2, 'ROLE_MANAGER');
 INSERT INTO ROLES VALUES (3, 'ROLE_EMPLOYEE');
 
-INSERT INTO COMPANY VALUES(111111, 'DELTA SMART TECH.');
+INSERT INTO COMPANY(company_id, name) VALUES(111111, 'DELTA SMART TECH.');
 
 INSERT INTO USERS(user_id, username, password,enabled, first_name, last_name, role_id, department, company_id) VALUES
     (123123, 'emirhanoguz', '$2y$10$GS9RE/ogpwUynaGLPvHiwubdLx0/EBsgnzn1ijQdK6F7InSUv6zBy', 1,  'Emirhan', 'Oğuz', 1, 'IT', 111111);
@@ -42,5 +42,5 @@ INSERT INTO USERS(user_id, username, password,enabled, first_name, last_name, ro
 
 CREATE SEQUENCE user_pk_seq MINVALUE 100000 START WITH 100000 INCREMENT BY 10;
 
-
+ */
 

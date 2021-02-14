@@ -31,9 +31,6 @@ public class UserAssert  extends AbstractAssert<UserAssert, User> {
     public void compareEachValue(User other){
         isNotNull();
 
-        if(actual.getUserId().compareTo(other.getUserId()) != 0){
-            failWithMessage("mismatch in userId field");
-        }
         if(actual.getUsername().compareTo(other.getUsername()) != 0){
             failWithMessage("mismatch in username field");
         }

@@ -14,6 +14,7 @@ public class Company {
 
     @Id
     @Column(name = "company_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long companyId;
 
     @Column(name = "name")
@@ -25,6 +26,10 @@ public class Company {
 
     public Company(Long companyId, String companyName) {
         this.companyId = companyId;
+        this.companyName = companyName;
+    }
+
+    public Company(String companyName){
         this.companyName = companyName;
     }
 }

@@ -39,13 +39,23 @@ public class User {
     @JoinColumn(name = "company_id", insertable = false, updatable = false, nullable = false )
     private Company company;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", insertable = false, updatable = false,nullable = false)
     private Role role;
 
 
     public User(Long id, String username, String password, String first_name, String last_name, Integer roleId, String department, Long companyId) {
         userId = id;
+        this.username = username;
+        this.password = password;
+        this.firstName = first_name;
+        this.lastName = last_name;
+        this.roleId = roleId;
+        this.department = department;
+        this.companyId = companyId;
+    }
+
+    public User(String username, String password, String first_name, String last_name, Integer roleId, String department, Long companyId) {
         this.username = username;
         this.password = password;
         this.firstName = first_name;
