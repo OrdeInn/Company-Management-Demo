@@ -38,14 +38,6 @@ public class UserRepositoryTest {
         Company company = new Company("Delta Smart Tech.");
         testEntityManager.persistAndFlush(company);
         companyId = testEntityManager.getId(company, Long.class);
-
-        Role systemManagerRole = new Role(1, "SYSTEM_MANAGER");
-        Role managerRole = new Role(2, "MANAGER");
-        Role employeeRole = new Role(3, "EMPLOYEE");
-
-        roleRepository.save(systemManagerRole);
-        roleRepository.save(managerRole);
-        roleRepository.save(employeeRole);
     }
 
     @Test
@@ -57,6 +49,8 @@ public class UserRepositoryTest {
 
         customAssert(testUser).hasNoNullValue();
         customAssert(testUser).compareEachValue(user);
+
+        testEntityManager.clear();
     }
 
     @Test
@@ -70,6 +64,8 @@ public class UserRepositoryTest {
 
         customAssert(testUser).hasNoNullValue();
         customAssert(testUser).compareEachValue(user);
+        testEntityManager.clear();
+
     }
 
     @Test
@@ -83,11 +79,13 @@ public class UserRepositoryTest {
         testEntityManager.persistAndFlush(user3);
 
         List<User> allUsers = userRepository.findAll();
-        assertThat(allUsers.size()).isEqualTo(3);
+        assertThat(allUsers.size()).isEqualTo(4);
 
         for(User user : allUsers){
             customAssert(user).hasNoNullValue();
         }
+        testEntityManager.clear();
+
     }
 
     @Test
@@ -104,6 +102,8 @@ public class UserRepositoryTest {
         for(User user : userList){
             customAssert(user).hasNoNullValue();
         }
+        testEntityManager.clear();
+
     }
 
     @Test
@@ -121,6 +121,8 @@ public class UserRepositoryTest {
             customAssert(user).hasNoNullValue();
             assertThat(user.getRoleId()).isEqualTo(user1.getRoleId());
         }
+        testEntityManager.clear();
+
     }
 
     @Test
@@ -130,6 +132,8 @@ public class UserRepositoryTest {
 
         customAssert(testUser).hasNoNullValue();
         customAssert(testUser).compareEachValue(user);
+        testEntityManager.clear();
+
     }
 
 
