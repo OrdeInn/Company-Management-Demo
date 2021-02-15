@@ -127,7 +127,7 @@ public class EmployeeControllerTest {
     @Test
     public void shouldAddNewEmployee()throws Exception{
         User employee = new User(12345L, "testUser", "password", "Test", "User", 3, "IT", 111111L);
-        given(employeeService.saveEmployee(employee)).willReturn(employee);
+        given(employeeService.saveEmployee(any(User.class))).willReturn(employee);
 
         MvcResult result = mockMvc .perform(post("/api/employee/new")
                 .contentType(MediaType.APPLICATION_JSON)

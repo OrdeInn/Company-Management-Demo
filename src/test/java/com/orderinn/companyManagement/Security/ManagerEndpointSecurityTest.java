@@ -1,12 +1,10 @@
 package com.orderinn.companyManagement.Security;
 
 
-import com.orderinn.companyManagement.Business.ManagerService;
-import com.orderinn.companyManagement.Model.User;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;

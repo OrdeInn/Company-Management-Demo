@@ -3,7 +3,7 @@ package com.orderinn.companyManagement.Business;
 import com.orderinn.companyManagement.Dal.CompanyRepository;
 import com.orderinn.companyManagement.Model.Company;
 import com.orderinn.companyManagement.Model.User;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+
+    @Autowired
+    public CompanyService(CompanyRepository companyRepository) {
+        this.companyRepository = companyRepository;
+    }
 
     public List<Company> getAllCompanies(){
         return companyRepository.findAll();
@@ -47,10 +51,9 @@ public class CompanyService {
 
         if(company.getCompanyId() == null || String.valueOf(company.getCompanyId()).length() < 5){
             throw new IllegalArgumentException("A company should have proper id");
-        }else if(company.getCompanyName() == null || company.getCompanyName() == ""){
+        }else if(company.getCompanyName() == null || company.getCompanyName().equals("")){
             throw new IllegalArgumentException("A company should have proper name");
         }
-
         return companyRepository.save(company);
     }
 }

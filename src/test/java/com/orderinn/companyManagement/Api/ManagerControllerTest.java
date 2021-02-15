@@ -129,7 +129,7 @@ public class ManagerControllerTest {
     @Test
     public void shouldAddNewManagerProperly()throws Exception{
         User manager = new User(12345L, "testUser", "password", "Test", "User", 2, "IT", 111111L);
-        given(managerService.saveManager(manager)).willReturn(manager);
+        given(managerService.saveManager(any(User.class))).willReturn(manager);
 
         MvcResult result =  mockMvc .perform(post("/api/manager/new")
                 .contentType(MediaType.APPLICATION_JSON)

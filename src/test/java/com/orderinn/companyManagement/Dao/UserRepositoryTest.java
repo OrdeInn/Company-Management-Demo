@@ -4,7 +4,6 @@ package com.orderinn.companyManagement.Dao;
 import com.orderinn.companyManagement.Dal.RoleRepository;
 import com.orderinn.companyManagement.Dal.UserRepository;
 import com.orderinn.companyManagement.Model.Company;
-import com.orderinn.companyManagement.Model.Role;
 import com.orderinn.companyManagement.Model.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,7 +78,7 @@ public class UserRepositoryTest {
         testEntityManager.persistAndFlush(user3);
 
         List<User> allUsers = userRepository.findAll();
-        assertThat(allUsers.size()).isEqualTo(4);
+        assertThat(allUsers.size()).isEqualTo(9);
 
         for(User user : allUsers){
             customAssert(user).hasNoNullValue();
@@ -115,7 +114,7 @@ public class UserRepositoryTest {
         testEntityManager.persistAndFlush(user2);
 
         List<User> userList = userRepository.findByRoleId(user1.getRoleId());
-        assertThat(userList.size()).isEqualTo(2);
+        assertThat(userList.size()).isEqualTo(4);
 
         for(User user : userList){
             customAssert(user).hasNoNullValue();

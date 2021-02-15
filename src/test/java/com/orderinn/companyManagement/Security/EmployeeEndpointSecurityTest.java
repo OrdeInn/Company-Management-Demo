@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class EmployeeEndpointSecurityTest {
+
     @Autowired
     private WebApplicationContext context;
     private MockMvc mockMvc;

@@ -1,15 +1,15 @@
 package com.orderinn.companyManagement.Model;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "company")
-@NoArgsConstructor
-@Data
 public class Company {
 
     @Id
@@ -20,6 +20,7 @@ public class Company {
     @Column(name = "name")
     private String companyName;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "company")
     private List<User> employees;
 
@@ -31,5 +32,31 @@ public class Company {
 
     public Company(String companyName){
         this.companyName = companyName;
+    }
+
+    public Company(){}
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public List<User> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<User> employees) {
+        this.employees = employees;
     }
 }

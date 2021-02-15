@@ -4,6 +4,7 @@ package com.orderinn.companyManagement.Api;
 import com.orderinn.companyManagement.Business.ManagerService;
 import com.orderinn.companyManagement.Model.User;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/manager")
-@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ManagerController {
 
     private final ManagerService managerService;
+
+    @Autowired
+    public ManagerController(ManagerService managerService) {
+        this.managerService = managerService;
+    }
 
     @GetMapping("/find/all")
     public ResponseEntity<List<User>> getAllManagers(){

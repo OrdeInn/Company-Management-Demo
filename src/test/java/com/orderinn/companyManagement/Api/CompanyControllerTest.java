@@ -128,7 +128,7 @@ public class CompanyControllerTest {
     public void  shouldAddNewCompanyToSystemProperly()throws Exception{
         Company company = new Company(111111L, "Delta");
 
-        given(companyService.saveCompany(company)).willReturn(company);
+        given(companyService.saveCompany(any(Company.class))).willReturn(company);
 
         MvcResult result = mockMvc.perform(post("/api/company/new")
                                     .contentType(MediaType.APPLICATION_JSON)
@@ -144,7 +144,7 @@ public class CompanyControllerTest {
     public void sendBadRequestWhenAddNewCompanyToSystemIfCompanyNameNull()  throws Exception  {
         Company company = new Company(111111L, null);
 
-        given(companyService.saveCompany(company)).willThrow(IllegalArgumentException.class);
+        given(companyService.saveCompany(any(Company.class))).willThrow(IllegalArgumentException.class);
 
         mockMvc.perform(post("/api/company/new")
                 .contentType(MediaType.APPLICATION_JSON)

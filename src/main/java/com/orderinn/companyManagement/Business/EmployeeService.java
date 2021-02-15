@@ -4,7 +4,7 @@ import com.orderinn.companyManagement.Dal.CompanyRepository;
 import com.orderinn.companyManagement.Dal.UserRepository;
 import com.orderinn.companyManagement.Model.Company;
 import com.orderinn.companyManagement.Model.User;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+
 public class EmployeeService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CompanyRepository companyRepository;
+
+    @Autowired
+    public EmployeeService(UserRepository userRepository, PasswordEncoder passwordEncoder, CompanyRepository companyRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.companyRepository = companyRepository;
+    }
 
     public User getEmployeeByUsername(String username){
 
