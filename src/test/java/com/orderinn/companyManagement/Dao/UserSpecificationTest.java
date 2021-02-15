@@ -84,7 +84,7 @@ public class UserSpecificationTest {
 
     @Test
     public void shouldGetEmployeesWorkInSameCompanyAndDepartment(){
-        Long companyId = 111111L;
+        Long companyId = 100L;
         String department = "IT";
 
         List<User> employees = userSpecification.getEmployeesInSameCompanyAndDepartment(companyId, department);

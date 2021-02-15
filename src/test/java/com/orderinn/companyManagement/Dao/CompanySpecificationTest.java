@@ -22,7 +22,7 @@ public class CompanySpecificationTest {
         List<Company> companyList = companySpecification.getCompaniesNamesLike(nameLike);
         assertThat(companyList.size()).isEqualTo(1);
         assertThat(companyList.get(0).getCompanyName()).isEqualTo("Google");
-        assertThat(companyList.get(0).getCompanyId()).isEqualTo(111112);
+        assertThat(companyList.get(0).getCompanyId()).isEqualTo(101L);
     }
 
 }

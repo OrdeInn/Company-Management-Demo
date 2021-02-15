@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
@@ -17,34 +19,23 @@ import static org.assertj.core.api.Assertions.*;
 public class CompanyRepositoryTest {
 
     @Autowired
-    private TestEntityManager testEntityManager;
-
-    @Autowired
     private CompanyRepository companyRepository;
 
     @Test
     public void shouldFindCompanyById(){
-        Company company = new Company("Delta");
-        testEntityManager.persistAndFlush(company);
+        Long companyId = 100L;
+        String companyName = "DELTA";
 
-        Company foundCompany = companyRepository.findByCompanyId(testEntityManager.getId(company, Long.class)).get();
-
-        assertThat(foundCompany.getCompanyId()).isEqualTo(company.getCompanyId());
-        assertThat(foundCompany.getCompanyName()).isEqualTo(company.getCompanyName());
+        Optional<Company> optionalCompany = companyRepository.findByCompanyId(companyId);
+        assertThat(optionalCompany.isPresent()).isTrue();
+        assertThat(optionalCompany.get().getCompanyId()).isEqualTo(companyId);
+        assertThat(optionalCompany.get().getCompanyName()).isEqualTo(companyName);
     }
 
     @Test
     public void shouldGetAllCompanies(){
-        Company company1 = new Company("Delta");
-        Company company2 = new Company("Google");
-        Company company3 = new Company("Apple");
-
-        testEntityManager.persistAndFlush(company1);
-        testEntityManager.persistAndFlush(company2);
-        testEntityManager.persistAndFlush(company3);
-
         List<Company> foundCompanies = companyRepository.findAll();
-
+        assertThat(foundCompanies.size()).isEqualTo(3);
         for(Company company : foundCompanies){
             assertThat(company.getCompanyId()).isNotNull();
             assertThat(company.getCompanyName()).isNotNull();
@@ -53,7 +44,7 @@ public class CompanyRepositoryTest {
 
     @Test
     public void shouldSaveCompanyDatabaseAndReturnItWithId(){
-        Company company = new Company("Delta Smart Tech.");
+        Company company = new Company("Amazon");
 
         Company savedCompany = companyRepository.save(company);
 
@@ -63,13 +54,17 @@ public class CompanyRepositoryTest {
 
     @Test
     public void shouldSaveCompanyAndGetItById(){
-        Company company = new Company("Delta Smart Tech.");
+        Company company = new Company("Amazon");
 
         Company savedCompany = companyRepository.save(company);
 
-        Company testCompany = companyRepository.findByCompanyId(savedCompany.getCompanyId()).get();
+        Optional<Company> optionalCompany = companyRepository.findByCompanyId(savedCompany.getCompanyId());
+        assertThat(optionalCompany.isPresent()).isTrue();
+
+        Company testCompany = optionalCompany.get();
 
         assertThat(testCompany.getCompanyId()).isNotNull();
+        assertThat(testCompany.getCompanyId()).isEqualTo(savedCompany.getCompanyId());
         assertThat(testCompany.getCompanyName()).isEqualTo(company.getCompanyName());
     }
 

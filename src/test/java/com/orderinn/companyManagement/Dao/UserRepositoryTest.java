@@ -1,18 +1,15 @@
 package com.orderinn.companyManagement.Dao;
 
-
-import com.orderinn.companyManagement.Dal.RoleRepository;
 import com.orderinn.companyManagement.Dal.UserRepository;
-import com.orderinn.companyManagement.Model.Company;
 import com.orderinn.companyManagement.Model.User;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static com.orderinn.companyManagement.CustomAsserts.UserAssert.*;
 
@@ -22,117 +19,75 @@ import static com.orderinn.companyManagement.CustomAsserts.UserAssert.*;
 public class UserRepositoryTest {
 
     @Autowired
-    private TestEntityManager testEntityManager;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    private Long companyId;
-
-    @Before
-    public void setupOtherTables(){
-        Company company = new Company("Delta Smart Tech.");
-        testEntityManager.persistAndFlush(company);
-        companyId = testEntityManager.getId(company, Long.class);
-    }
 
     @Test
     public void shouldFindUserWithUsername(){
-        User user = new User("testUser", "password", "Test", "User", 2, "IT", companyId);
-        testEntityManager.persistAndFlush(user);
+        User testUser = new User(123456L, "testManager1", "$2y$10$GS9RE/ogpwUynaGLPvHiwubdLx0/EBsgnzn1ijQdK6F7InSUv6zBy",
+                "TestManager1", "Test1", 2, "IT", 100L);
 
-        User testUser = userRepository.findByUsername(user.getUsername()).get();
+        Optional<User> optionalUser = userRepository.findByUsername(testUser.getUsername());
+        assertThat(optionalUser.isPresent()).isTrue();
 
-        customAssert(testUser).hasNoNullValue();
-        customAssert(testUser).compareEachValue(user);
-
-        testEntityManager.clear();
+        customAssert(optionalUser.get()).hasNoNullValue();
+        customAssert(optionalUser.get()).compareEachValue(testUser);
     }
 
     @Test
     public void shouldFindUserWithUserId(){
-        User user = new User("testUser", "password", "Test", "User", 2, "IT", companyId);
+        User testUser = new User(123457L, "testManager2", "$2y$10$GS9RE/ogpwUynaGLPvHiwubdLx0/EBsgnzn1ijQdK6F7InSUv6zBy",
+                "TestManager2", "Test2", 2, "HR", 100L);
 
-        testEntityManager.persistAndFlush(user);
-        Long userId = testEntityManager.getId(user,Long.class);
+        Optional<User> optionalUser = userRepository.findByUserId(testUser.getUserId());
+        assertThat(optionalUser.isPresent()).isTrue();
 
-        User testUser = userRepository.findByUserId(userId).get();
-
-        customAssert(testUser).hasNoNullValue();
-        customAssert(testUser).compareEachValue(user);
-        testEntityManager.clear();
+        customAssert(optionalUser.get()).hasNoNullValue();
+        customAssert(optionalUser.get()).compareEachValue(testUser);
 
     }
 
     @Test
     public void shouldGetAllUsers(){
-        User user1 = new User("testUser1", "password", "Test1", "User1", 2, "IT", companyId);
-        User user2 = new User("testUser2", "password", "Test2", "User2", 3, "IT", companyId);
-        User user3 = new User("testUser3", "password", "Test3", "User3", 1, "IT", companyId);
-
-        testEntityManager.persistAndFlush(user1);
-        testEntityManager.persistAndFlush(user2);
-        testEntityManager.persistAndFlush(user3);
-
         List<User> allUsers = userRepository.findAll();
-        assertThat(allUsers.size()).isEqualTo(9);
+        assertThat(allUsers.size()).isEqualTo(6);
 
         for(User user : allUsers){
             customAssert(user).hasNoNullValue();
         }
-        testEntityManager.clear();
-
     }
 
     @Test
     public void shouldGetListOfUsersByFirstName(){
-        User user1 = new User("testUser1", "password", "Test", "User1", 2, "IT", companyId);
-        User user2 = new User("testUser2", "password", "Test", "User2", 1, "IT", companyId);
+        User testUser = new User(123460L, "differentEmployee", "$2y$10$GS9RE/ogpwUynaGLPvHiwubdLx0/EBsgnzn1ijQdK6F7InSUv6zBy",
+                "DiffEmployee", "Different", 3, "HR", 100L);
 
-        testEntityManager.persistAndFlush(user1);
-        testEntityManager.persistAndFlush(user2);
+        List<User> userList = userRepository.findByFirstName(testUser.getFirstName());
+        assertThat(userList.size()).isEqualTo(1);
 
-        List<User> userList = userRepository.findByFirstName(user1.getFirstName());
-        assertThat(userList.size()).isEqualTo(2);
-
-        for(User user : userList){
-            customAssert(user).hasNoNullValue();
-        }
-        testEntityManager.clear();
-
+        customAssert(userList.get(0)).hasNoNullValue();
+        customAssert(userList.get(0)).compareEachValue(testUser);
     }
 
     @Test
     public void shouldGetListOfSameRoleTypeUsers(){
-        User user1 = new User("testUser1", "password", "Test1", "User1", 2, "IT", companyId);
-        User user2 = new User("testUser2", "password", "Test2", "User2", 2, "IT", companyId);
+        List<User> managers = userRepository.findByRoleId(2);
+        assertThat(managers.size()).isEqualTo(2);
 
-        testEntityManager.persistAndFlush(user1);
-        testEntityManager.persistAndFlush(user2);
-
-        List<User> userList = userRepository.findByRoleId(user1.getRoleId());
-        assertThat(userList.size()).isEqualTo(4);
-
-        for(User user : userList){
-            customAssert(user).hasNoNullValue();
-            assertThat(user.getRoleId()).isEqualTo(user1.getRoleId());
+        for(User manager : managers){
+            customAssert(manager).hasNoNullValue();
+            assertThat(manager.getRoleId()).isEqualTo(2);
         }
-        testEntityManager.clear();
-
     }
 
     @Test
     public void shouldSaveUserProperly(){
-        User user = new User("testUser", "password", "Test", "User", 2, "IT", companyId);
-        User testUser = userRepository.save(user);
+        User testUser = new User("saveTest", "password",
+                "FirstName", "Lastname", 2, "IT", 100L);
 
-        customAssert(testUser).hasNoNullValue();
-        customAssert(testUser).compareEachValue(user);
-        testEntityManager.clear();
+        User returnedUser = userRepository.save(testUser);
 
+        customAssert(returnedUser).hasNoNullValue();
+        assertThat(returnedUser.getUserId()).isEqualTo(100000);//It is the first value of user_pk_seq sequence which is auto implemented by db.
     }
 
 

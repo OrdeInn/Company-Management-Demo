@@ -13,15 +13,16 @@ import java.util.List;
 public class Company {
 
     @Id
+    @SequenceGenerator(name="company_gen", sequenceName = "company_pk_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "company_gen")
     @Column(name = "company_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long companyId;
 
     @Column(name = "name")
     private String companyName;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<User> employees;
 
 
